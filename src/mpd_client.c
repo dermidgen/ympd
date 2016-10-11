@@ -731,7 +731,7 @@ int mpd_get_playlist(char *buffer, char *name)
 
 
     mpd_send_list_playlist(mpd.conn, name);
-    cur += json_emit_raw_str(cur, end - cur, "{\"type\":\"search\",\"data\":[ ");
+    cur += json_emit_raw_str(cur, end - cur, "{\"type\":\"playlist\",\"data\":[ ");
 
     while((song = mpd_recv_song(mpd.conn)) != NULL) {
         cur += json_emit_raw_str(cur, end - cur, "{\"type\":\"song\",\"uri\":");
