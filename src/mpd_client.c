@@ -229,6 +229,20 @@ out_save_queue:
 out_search:
             free(p_charbuf);
             break;
+        case MPD_API_GET_PLAYLIST:
+            p_charbuf = strdup(c->content);
+            if(strcmp(strtok(p_charbuf, ","), "MPD_API_GET_PLAYLIST"))
+                goto out_get_playlist;
+
+            if((token = strtok(NULL, ",")) == NULL)
+                goto out_get_playlist;
+
+			free(p_charbuf);
+            p_charbuf = strdup(c->content);
+            n = mpd_get_playlist(mpd.buf, get_arg1(p_charbuf));
+out_get_playlist:
+            free(p_charbuf);
+            break;
 #ifdef WITH_MPD_HOST_CHANGE
         /* Commands allowed when disconnected from MPD server */
         case MPD_API_SET_MPDHOST:
@@ -695,6 +709,42 @@ int mpd_search(char *buffer, char *searchstr)
 
         cur += json_emit_raw_str(cur, end - cur, "]}");
     }
+    return cur - buffer;
+}
+
+int mpd_get_playlist(char *buffer, char *name)
+{
+    int i = 0;
+    char *cur = buffer;
+    const char *end = buffer + MAX_SIZE;
+    struct mpd_song *song;
+
+
+    mpd_send_list_playlist(mpd.conn, name);
+    cur += json_emit_raw_str(cur, end - cur, "{\"type\":\"playlist\",\"data\":[ ");
+
+    while((song = mpd_recv_song(mpd.conn)) != NULL) {
+        cur += json_emit_raw_str(cur, end - cur, "{\"type\":\"song\",\"uri\":");
+        cur += json_emit_quoted_str(cur, end - cur, mpd_song_get_uri(song));
+        cur += json_emit_raw_str(cur, end - cur, ",\"duration\":");
+        cur += json_emit_int(cur, end - cur, mpd_song_get_duration(song));
+        cur += json_emit_raw_str(cur, end - cur, ",\"title\":");
+        cur += json_emit_quoted_str(cur, end - cur, mpd_get_title(song));
+        cur += json_emit_raw_str(cur, end - cur, "},");
+        mpd_song_free(song);
+
+        /* Maximum results */
+        if(i++ >= 300)
+        {
+            cur += json_emit_raw_str(cur, end - cur, "{\"type\":\"wrap\"},");
+            break;
+        }
+    }
+
+    /* remove last ',' */
+    cur--;
+
+    cur += json_emit_raw_str(cur, end - cur, "]}");
     return cur - buffer;
 }
 
