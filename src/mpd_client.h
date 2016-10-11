@@ -39,6 +39,7 @@
 #define MPD_CMDS(X) \
     X(MPD_API_GET_QUEUE) \
     X(MPD_API_GET_BROWSE) \
+    X(MPD_API_GET_PLAYLIST) \
     X(MPD_API_GET_MPDHOST) \
     X(MPD_API_ADD_TRACK) \
     X(MPD_API_ADD_PLAY_TRACK) \
@@ -109,6 +110,7 @@ int mpd_put_current_song(char *buffer);
 int mpd_put_queue(char *buffer, unsigned int offset);
 int mpd_put_browse(char *buffer, char *path, unsigned int offset);
 int mpd_search(char *buffer, char *searchstr);
+int mpd_get_playlist(char *buffer, char *name);
 void mpd_disconnect();
 #endif
 
