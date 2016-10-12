@@ -165,6 +165,20 @@ int callback_mpd(struct mg_connection *c)
 out_browse:
 			free(p_charbuf);
             break;
+        case MPD_API_GET_PLAYLIST:
+            p_charbuf = strdup(c->content);
+            if(strcmp(strtok(p_charbuf, ","), "MPD_API_GET_PLAYLIST"))
+                goto out_get_playlist;
+
+            if((token = strtok(NULL, ",")) == NULL)
+                goto out_get_playlist;
+
+            free(p_charbuf);
+            p_charbuf = strdup(c->content);
+            n = mpd_get_playlist(mpd.buf, get_arg1(p_charbuf));
+out_get_playlist:
+            free(p_charbuf);
+            break;
         case MPD_API_ADD_TRACK:
             p_charbuf = strdup(c->content);
             if(strcmp(strtok(p_charbuf, ","), "MPD_API_ADD_TRACK"))
@@ -235,20 +249,6 @@ out_save_queue:
             p_charbuf = strdup(c->content);
             n = mpd_search(mpd.buf, get_arg1(p_charbuf));
 out_search:
-            free(p_charbuf);
-            break;
-        case MPD_API_GET_PLAYLIST:
-            p_charbuf = strdup(c->content);
-            if(strcmp(strtok(p_charbuf, ","), "MPD_API_GET_PLAYLIST"))
-                goto out_get_playlist;
-
-            if((token = strtok(NULL, ",")) == NULL)
-                goto out_get_playlist;
-
-			free(p_charbuf);
-            p_charbuf = strdup(c->content);
-            n = mpd_get_playlist(mpd.buf, get_arg1(p_charbuf));
-out_get_playlist:
             free(p_charbuf);
             break;
 #ifdef WITH_MPD_HOST_CHANGE
