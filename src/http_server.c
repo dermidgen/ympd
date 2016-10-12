@@ -37,8 +37,7 @@ int callback_http(struct mg_connection *c)
         return MG_TRUE;
     }
 
-    req_file = find_embedded_file("/index.html");
-    mg_send_header(c, "Content-Type", req_file->mimetype);
-    mg_send_data(c, req_file->data, req_file->size);
+    mg_send_status(c, 404);
+    mg_printf_data(c, "Not Found");
     return MG_TRUE;
 }

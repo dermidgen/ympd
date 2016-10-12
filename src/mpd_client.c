@@ -51,16 +51,6 @@ static inline enum mpd_cmd_ids get_cmd_id(char *cmd)
     return -1;
 }
 
-int is_mpd_request(struct mg_connection *c)
-{
-    enum mpd_cmd_ids cmd_id = get_cmd_id(c->content);
-    
-    if (cmd_id == -1)
-        return MG_FALSE;
-    else
-        return MG_TRUE;
-}
-
 int callback_mpd(struct mg_connection *c)
 {
     enum mpd_cmd_ids cmd_id = get_cmd_id(c->content);

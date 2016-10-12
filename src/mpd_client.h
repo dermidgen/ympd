@@ -101,7 +101,6 @@ struct t_mpd_client_session {
 };
 
 void mpd_poll(struct mg_server *s);
-int is_mpd_request(struct mg_connection *c);
 int callback_mpd(struct mg_connection *c);
 int mpd_close_handler(struct mg_connection *c);
 int mpd_put_state(char *buffer, int *current_song_id, unsigned *queue_version);
